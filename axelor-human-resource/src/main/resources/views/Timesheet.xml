@@ -204,7 +204,7 @@
 		<action name="action-timesheet-attrs-buttons"/>
 		<action name="action-timesheet-attrs-set-visible-duration-title"/>
 		<action name="action-timesheet-record-from-period-date"/>
-		<action name="action-timesheet-record-to-date" if="fromDate != null"/>
+		<action name="action-timesheet-method-set-to-date" if="fromDate != null"/>
 		<action name="action-timesheet-attrs-title-project"/>
 		<action name="action-timesheet-attrs-from-date-on-new"/>
 		<action name="action-timesheet-attrs-panels"/>
@@ -232,11 +232,6 @@
 	<action-record name="action-timesheet-record-default-generation-date" model="com.axelor.apps.hr.db.Timesheet">
 	    <field name="$fromGenerationDate" expr="eval:fromDate"/>
 	    <field name="$toGenerationDate" expr="eval:toDate" if="toDate != null"/>
-	</action-record>
-
-	<action-record name="action-timesheet-record-to-date" model="com.axelor.apps.hr.db.Timesheet">
-		<field name="toDate" expr="eval:fromDate.with(java.time.DayOfWeek.FRIDAY)" if="toDate == null &amp;&amp; fromDate != null &amp;&amp;  __config__.app.getApp('timesheet').getDefaultEndFormat() == 1"/>
-		<field name="toDate" expr="eval:fromDate.withDayOfMonth(fromDate.lengthOfMonth())" if="toDate == null &amp;&amp; fromDate != null &amp;&amp;  __config__.app.getApp('timesheet').getDefaultEndFormat() == 2"/>
 	</action-record>
 
 	<action-validate name="action-timesheet-validate-tasks">
@@ -393,6 +388,10 @@
     	<call class="com.axelor.apps.hr.web.timesheet.TimesheetController" method="openTimesheetEditor"/>
     </action-method>
 
+	<action-method name="action-timesheet-method-set-to-date">
+		<call class="com.axelor.apps.hr.web.timesheet.TimesheetController" method="setEndDateFromEmployeeWeeklyPlanning"/>
+	</action-method>
+	
 	<action-view name="action-timesheet-view-total-hours-per-day" title="">
   		<view name="chart.total.hours.per.day" type="chart"/>
     	<context name="timesheet_id" expr="eval: __self__.id"/>

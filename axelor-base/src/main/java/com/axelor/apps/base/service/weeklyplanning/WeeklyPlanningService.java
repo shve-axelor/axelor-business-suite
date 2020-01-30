@@ -35,4 +35,6 @@ public interface WeeklyPlanningService {
   public DayPlanning findDayPlanning(WeeklyPlanning planning, LocalDate date);
 
   public DayPlanning findDayWithName(WeeklyPlanning planning, String name);
+
+  public DayOfWeek getLastWorkingDayOfWeek(WeeklyPlanning planning);
 }

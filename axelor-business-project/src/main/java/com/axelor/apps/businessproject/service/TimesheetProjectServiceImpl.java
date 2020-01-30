@@ -21,6 +21,7 @@ import com.axelor.apps.account.db.Invoice;
 import com.axelor.apps.account.db.InvoiceLine;
 import com.axelor.apps.base.db.Product;
 import com.axelor.apps.base.service.PriceListService;
+import com.axelor.apps.base.service.weeklyplanning.WeeklyPlanningService;
 import com.axelor.apps.hr.db.TimesheetLine;
 import com.axelor.apps.hr.service.app.AppHumanResourceService;
 import com.axelor.apps.hr.service.config.HRConfigService;
@@ -52,7 +53,8 @@ public class TimesheetProjectServiceImpl extends TimesheetServiceImpl {
       ProjectRepository projectRepo,
       UserRepository userRepo,
       UserHrService userHrService,
-      TimesheetLineService timesheetLineService) {
+      TimesheetLineService timesheetLineService,
+      WeeklyPlanningService weeklyPlanningService) {
     super(
         priceListService,
         appHumanResourceService,
@@ -61,7 +63,8 @@ public class TimesheetProjectServiceImpl extends TimesheetServiceImpl {
         projectRepo,
         userRepo,
         userHrService,
-        timesheetLineService);
+        timesheetLineService,
+        weeklyPlanningService);
   }
 
   @Override

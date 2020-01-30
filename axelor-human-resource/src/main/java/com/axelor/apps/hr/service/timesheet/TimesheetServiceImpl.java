@@ -27,6 +27,7 @@ import com.axelor.apps.base.db.PriceListLine;
 import com.axelor.apps.base.db.Product;
 import com.axelor.apps.base.db.WeeklyPlanning;
 import com.axelor.apps.base.db.repo.AppBaseRepository;
+import com.axelor.apps.base.db.repo.AppTimesheetRepository;
 import com.axelor.apps.base.db.repo.PriceListLineRepository;
 import com.axelor.apps.base.db.repo.PriceListRepository;
 import com.axelor.apps.base.service.PartnerPriceListService;
@@ -65,6 +66,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -87,6 +89,7 @@ public class TimesheetServiceImpl implements TimesheetService {
   protected UserRepository userRepo;
   protected UserHrService userHrService;
   protected TimesheetLineService timesheetLineService;
+  protected WeeklyPlanningService weeklyPlanningService;
 
   @Inject
   public TimesheetServiceImpl(
@@ -97,7 +100,8 @@ public class TimesheetServiceImpl implements TimesheetService {
       ProjectRepository projectRepo,
       UserRepository userRepo,
       UserHrService userHrService,
-      TimesheetLineService timesheetLineService) {
+      TimesheetLineService timesheetLineService,
+      WeeklyPlanningService weeklyPlanningService) {
     this.priceListService = priceListService;
     this.appHumanResourceService = appHumanResourceService;
     this.hrConfigService = hrConfigService;
@@ -106,6 +110,7 @@ public class TimesheetServiceImpl implements TimesheetService {
     this.userRepo = userRepo;
     this.userHrService = userHrService;
     this.timesheetLineService = timesheetLineService;
+    this.weeklyPlanningService = weeklyPlanningService;
   }
 
   @Override
@@ -878,5 +883,21 @@ public class TimesheetServiceImpl implements TimesheetService {
                 .computeHoursDuration(timesheet, timesheetLine.getHoursDuration(), false));
       }
     }
+  }
+
+  public Timesheet setEndDateFromDefaultEndDateFormat(Timesheet timesheet) {
+    AppTimesheet appTimesheet = Beans.get(AppTimesheetRepository.class).all().fetchOne();
+    LocalDate timesheetFromDate = timesheet.getFromDate();
+    if (appTimesheet.getDefaultEndFormat() == 2) {
+      timesheet.setToDate(timesheetFromDate.withDayOfMonth(timesheetFromDate.lengthOfMonth()));
+    } else if (appTimesheet.getDefaultEndFormat() == 1) {
+      WeeklyPlanning weeklyPlanning = timesheet.getUser().getEmployee().getWeeklyPlanning();
+      timesheet.setToDate(
+          timesheetFromDate.with(
+              weeklyPlanning != null
+                  ? weeklyPlanningService.getLastWorkingDayOfWeek(weeklyPlanning)
+                  : DayOfWeek.FRIDAY));
+    }
+    return timesheet;
   }
 }

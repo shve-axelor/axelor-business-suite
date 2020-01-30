@@ -26,6 +26,8 @@ import com.axelor.i18n.I18n;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class WeeklyPlanningServiceImp implements WeeklyPlanningService {
 
@@ -166,5 +168,29 @@ public class WeeklyPlanningServiceImp implements WeeklyPlanningService {
         I18n.get(Character.toUpperCase(dayPlanningName.charAt(0)) + dayPlanningName.substring(1))
             .toLowerCase()); // Because day of week are traduced with a upperCase at the first
     // letter
+  }
+
+  @Override
+  public DayOfWeek getLastWorkingDayOfWeek(WeeklyPlanning planning) {
+    List<DayPlanning> dayPlannings =
+        planning
+            .getWeekDays()
+            .stream()
+            .filter(
+                x ->
+                    x.getAfternoonFrom() != null
+                        || x.getAfternoonTo() != null
+                        || x.getMorningFrom() != null
+                        || x.getMorningTo() != null)
+            .collect(Collectors.toList());
+    if (ObjectUtils.notEmpty(dayPlannings)) {
+      Optional<DayPlanning> max =
+          dayPlannings.stream().max(Comparator.comparing(DayPlanning::getSequence));
+
+      if (max.isPresent()) {
+        return getDayOfWeek(max.get());
+      }
+    }
+    return DayOfWeek.FRIDAY;
   }
 }

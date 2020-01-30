@@ -18,6 +18,7 @@
 package com.axelor.apps.businessproduction.service;
 
 import com.axelor.apps.base.service.PriceListService;
+import com.axelor.apps.base.service.weeklyplanning.WeeklyPlanningService;
 import com.axelor.apps.businessproject.service.TimesheetProjectServiceImpl;
 import com.axelor.apps.hr.db.Timesheet;
 import com.axelor.apps.hr.service.app.AppHumanResourceService;
@@ -43,7 +44,8 @@ public class TimesheetBusinessProductionServiceImpl extends TimesheetProjectServ
       ProjectRepository projectRepo,
       UserRepository userRepo,
       UserHrService userHrService,
-      TimesheetLineService timesheetLineService) {
+      TimesheetLineService timesheetLineService,
+      WeeklyPlanningService weeklyPlanningService) {
     super(
         priceListService,
         appHumanResourceService,
@@ -52,7 +54,8 @@ public class TimesheetBusinessProductionServiceImpl extends TimesheetProjectServ
         projectRepo,
         userRepo,
         userHrService,
-        timesheetLineService);
+        timesheetLineService,
+        weeklyPlanningService);
   }
 
   @Override

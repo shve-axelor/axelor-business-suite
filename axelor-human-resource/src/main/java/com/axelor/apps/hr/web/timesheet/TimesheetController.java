@@ -35,6 +35,7 @@ import com.axelor.apps.hr.service.HRMenuTagService;
 import com.axelor.apps.hr.service.HRMenuValidateService;
 import com.axelor.apps.hr.service.timesheet.TimesheetLineService;
 import com.axelor.apps.hr.service.timesheet.TimesheetService;
+import com.axelor.apps.hr.service.timesheet.TimesheetServiceImpl;
 import com.axelor.apps.hr.service.user.UserHrService;
 import com.axelor.apps.message.db.Message;
 import com.axelor.apps.message.db.repo.MessageRepository;
@@ -571,6 +572,15 @@ public class TimesheetController {
       response.setValue("timesheetLineList", timesheet.getTimesheetLineList());
     } catch (Exception e) {
       TraceBackService.trace(response, e);
+    }
+  }
+
+  public void setEndDateFromEmployeeWeeklyPlanning(ActionRequest request, ActionResponse response) {
+    Timesheet timesheet = request.getContext().asType(Timesheet.class);
+    if (timesheet.getToDate() == null) {
+      timesheet =
+          Beans.get(TimesheetServiceImpl.class).setEndDateFromDefaultEndDateFormat(timesheet);
+      response.setValues(timesheet);
     }
   }
 }
